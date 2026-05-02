@@ -100,7 +100,7 @@ http://127.0.0.1:5000/
 
 ## 📸 Screenshots
 
-👉 Add your project UI screenshots here (VERY IMPORTANT for portfolio)
+👉 bazarr_img.png
 
 ---
 
