@@ -1,144 +1,137 @@
-# 🛒 ShopBlack — Full-Stack Flask E-Commerce
+# 🚀 Bazarr - Smart Product Recommendation System
 
-A complete Amazon/Flipkart-style e-commerce app built with Flask, SQLite, and Bootstrap.
+## 📌 Overview
+
+Bazarr is a machine learning-based smart product recommendation system that analyzes customer purchase patterns and suggests relevant products using association rule mining (Apriori algorithm).
+
+This project demonstrates how data-driven techniques can be used to enhance user experience in e-commerce platforms by providing intelligent product recommendations.
 
 ---
 
-## 🚀 Quick Start (VS Code)
+## 🎯 Key Features
 
-### 1. Install Dependencies
+* 🧠 Product recommendation using Apriori Algorithm
+* 📊 Data analysis on Amazon product dataset
+* 📦 Automated product addition system
+* 📧 Email notification service integration
+* 🌐 Web-based interface using Flask
+* 🖼️ Image handling for products
+
+---
+
+## 🛠️ Tech Stack
+
+* **Backend:** Python, Flask
+* **Machine Learning:** Apriori Algorithm
+* **Data Processing:** Pandas, NumPy
+* **Frontend:** HTML, CSS
+* **Database:** SQLite (instance folder)
+* **Other:** Email Service Integration
+
+---
+
+## 📂 Project Structure
+
+```
+Bazarr-/
+│── app.py                 # Main Flask application
+│── apriori.py             # Recommendation logic using Apriori
+│── add_products.py        # Script to add products
+│── import_scripts.py      # Data import utilities
+│── email_service.py       # Email sending functionality
+│── images.py              # Image processing
+│── amazon.csv             # Dataset
+│── templates/             # HTML pages
+│── static/                # CSS, JS, images
+│── instance/              # Database files
+│── requirements.txt       # Dependencies
+│── render.yaml            # Deployment config
+│── README.md              # Documentation
+```
+
+---
+
+## ⚙️ Installation & Setup
+
+### 1️⃣ Clone Repository
+
 ```bash
-cd ecommerce
+git clone https://github.com/yourusername/Bazarr-project.git
+cd Bazarr-project
+```
+
+### 2️⃣ Create Virtual Environment
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+### 3️⃣ Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Run the App
+---
+
+## ▶️ Run the Application
+
 ```bash
 python app.py
 ```
 
-### 3. Open in Browser
-```
-http://localhost:5000
-```
-
-The database is auto-created and seeded with 24 products on first run.
-
----
-
-## ✅ Features
-
-| Feature | Status |
-|---|---|
-| User Signup / Login | ✅ |
-| Product Listing with Filters | ✅ |
-| Product Detail Page | ✅ |
-| Search with Suggestions | ✅ |
-| Add to Cart | ✅ |
-| Wishlist | ✅ |
-| Checkout with Address | ✅ |
-| Multiple Payment Methods | ✅ |
-| Order Placement | ✅ |
-| Order History | ✅ |
-| Order Detail View | ✅ |
-| User Profile Edit | ✅ |
-| Recommended Products | ✅ |
-| Responsive Design | ✅ |
-| Category Browsing | ✅ |
-| Sort & Filter | ✅ |
-| Pagination | ✅ |
-
----
-
-## 📁 Project Structure
+👉 Open browser:
 
 ```
-ecommerce/
-├── app.py                  # Main Flask app (models + routes)
-├── requirements.txt
-├── instance/
-│   └── ecommerce.db        # SQLite DB (auto-created)
-└── templates/
-    ├── base.html           # Layout + navbar
-    ├── index.html          # Homepage
-    ├── products.html       # Product listing
-    ├── product_detail.html # Product page
-    ├── cart.html           # Shopping cart
-    ├── checkout.html       # Checkout
-    ├── order_success.html  # Order confirmation
-    ├── orders.html         # Order history
-    ├── order_detail.html   # Order details
-    ├── wishlist.html       # Wishlist
-    ├── login.html          # Login
-    ├── signup.html         # Signup
-    └── profile.html        # User profile
+http://127.0.0.1:5000/
 ```
 
 ---
 
-## 📊 Real Datasets (Free)
+## 📊 How It Works
 
-To expand the product catalog, use these real datasets:
-
-### 1. Amazon Product Dataset (Kaggle)
-- URL: https://www.kaggle.com/datasets/promptcloud/amazon-india-product-dataset-2020
-- Format: CSV with product name, price, category, image URL, ratings
-- How to use: Import with pandas, insert into Product model
-
-### 2. Flipkart Product Dataset
-- URL: https://www.kaggle.com/datasets/PromptCloudHQ/flipkart-products
-- Format: CSV with ~20,000 products
-
-### 3. BigBasket Products Dataset
-- URL: https://www.kaggle.com/datasets/mkechinov/ecommerce-purchase-history-from-electronics-store
-- Format: Electronics purchase data
-
-### 4. Open Food Facts (for grocery)
-- URL: https://world.openfoodfacts.org/data
-- Format: CSV/JSON with 3M+ food products
-
-### Import Script Example:
-```python
-import pandas as pd
-from app import app, db, Product
-
-df = pd.read_csv('amazon_products.csv')
-with app.app_context():
-    for _, row in df.iterrows():
-        p = Product(
-            name=row['product_name'],
-            price=float(row['discounted_price'].replace('₹','').replace(',','')),
-            original_price=float(row['actual_price'].replace('₹','').replace(',','')),
-            category=row['category'].split('|')[0],
-            brand=row.get('brand', 'Unknown'),
-            image_url=row.get('img_link', ''),
-            description=row.get('about_product', ''),
-            rating=float(row.get('rating', 4.0)),
-            reviews_count=int(row.get('rating_count', 0))
-        )
-        db.session.add(p)
-    db.session.commit()
-    print("Import complete!")
-```
+* The system reads transaction/product data from `amazon.csv`
+* Applies **Apriori Algorithm** to find frequent itemsets
+* Generates association rules
+* Recommends products based on user selection
 
 ---
 
-## 🎨 Tech Stack
+## 📸 Screenshots
 
-- **Backend:** Flask 3.0, SQLAlchemy, Werkzeug
-- **Frontend:** Bootstrap 5.3, Bootstrap Icons, Bebas Neue + DM Sans fonts
-- **Database:** SQLite (can upgrade to PostgreSQL/MySQL)
-- **Theme:** Black & White editorial design
+👉 Add your project UI screenshots here (VERY IMPORTANT for portfolio)
 
 ---
 
-## 🔧 Upgrade to PostgreSQL
+## 🚀 Deployment
 
-```python
-# In app.py, replace:
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ecommerce.db'
-# With:
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:password@localhost/shopblack'
-```
+This project includes `render.yaml`
+You can deploy easily on **Render**
 
-Add `psycopg2-binary` to requirements.txt.
+---
+
+## 🔮 Future Enhancements
+
+* Improve recommendation accuracy
+* Add user login system
+* Integrate real-time database
+* Enhance UI/UX design
+* Add advanced ML models
+
+---
+
+## 🤝 Contribution
+
+Feel free to fork this repository and contribute!
+
+---
+
+## 📧 Contact
+
+**Shilpa Tumma**
+📩 shilpatumma21@gmail.com
+
+---
+
+If you found this project useful, please ⭐ the repository!
