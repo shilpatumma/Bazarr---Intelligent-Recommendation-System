@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} — ShopBlack{% endblock %}
+{% block extra_css %}
+<style>
+.breadcrumb { font-size: 0.8rem; padding: 16px 0; }
+.breadcrumb a { color: #888; text-decoration: none; }
+.breadcrumb a:hover { color: #000; }
+.breadcrumb-sep { color: #ccc; margin: 0 8px; }
+.product-img-main {
+  background: #f5f5f5;
+  border-radius: 6px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  margin-bottom: 12px;
+}
+.product-img-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.product-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+.product-brand-cat { font-size: 0.8rem; color: #888; margin-bottom: 8px; }
+.product-brand-cat a { color: #555; text-decoration: none; }
+.product-brand-cat a:hover { color: #000; }
+.big-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #000;
+}
+.big-orig {
+  font-size: 1rem;
+  color: #aaa;
+  text-decoration: line-through;
+  margin-left: 12px;
+}
+.big-saving {
+  font-size: 0.85rem;
+  color: #000;
+  background: #f0f0f0;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-weight: 600;
+  margin-left: 12px;
+}
+.product-meta { border: 1px solid #f0f0f0; border-radius: 4px; padding: 16px; margin: 20px 0; }
+.meta-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f8f8f8; font-size: 0.85rem; }
+.meta-row:last-child { border-bottom: none; }
+.meta-row span:first-child { color: #888; }
+.meta-row span:last-child { font-weight: 600; }
+.qty-wrap { display: flex; align-items: center; gap: 0; border: 1px solid #ddd; border-radius: 3px; width: fit-content; overflow: hidden; }
+.qty-btn {
+  width: 36px; height: 36px;
+  border: none;
+  background: #f5f5f5;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.qty-btn:hover { background: #eee; }
+.qty-input {
+  width: 48px;
+  border: none;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  outline: none;
+  height: 36px;
+}
+.action-btns { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+.btn-buy-now {
+  background: #000;
+  color: #fff;
+  border: 2px solid #000;
+  padding: 13px 36px;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+.btn-buy-now:hover { background: #333; }
+.btn-add-wish {
+  background: transparent;
+  border: 2px solid #ddd;
+  padding: 13px 20px;
+  border-radius: 3px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #666;
+}
+.btn-add-wish:hover, .btn-add-wish.active { border-color: #000; color: #000; }
+.delivery-info {
+  background: #f8f8f8;
+  border-radius: 4px;
+  padding: 16px;
+  margin-top: 20px;
+  font-size: 0.85rem;
+}
+.delivery-info .di { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; }
+.delivery-info .di i { font-size: 1rem; color: #333; margin-top: 2px; }
+.tabs-section { margin-top: 48px; }
+.tab-btns { display: flex; border-bottom: 2px solid #eee; margin-bottom: 24px; }
+.tab-btn {
+  padding: 10px 24px;
+  border: none;
+  background: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+.tab-btn.active { color: #000; border-bottom-color: #000; }
+.tab-content-panel { display: none; }
+.tab-content-panel.active { display: block; }
+.spec-table { width: 100%; font-size: 0.875rem; }
+.spec-table tr:nth-child(even) td { background: #f8f8f8; }
+.spec-table td { padding: 10px 14px; border: 1px solid #f0f0f0; }
+.spec-table td:first-child { font-weight: 600; width: 35%; color: #444; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-content">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="{{ url_for('index') }}">Home</a><span class="breadcrumb-sep">›</span>
+    <a href="{{ url_for('products') }}">Products</a><span class="breadcrumb-sep">›</span>
+    <a href="{{ url_for('category', category_name=product.category) }}">{{ product.category }}</a><span class="breadcrumb-sep">›</span>
+    <span>{{ product.name }}</span>
+  </div>
+
+  <div class="row g-4">
+    <!-- IMAGE -->
+    <div class="col-md-5">
+      <div class="product-img-main">
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" onerror="this.src='https://via.placeholder.com/600x600?text=No+Image'">
+      </div>
+    </div>
+
+    <!-- DETAILS -->
+    <div class="col-md-7">
+      <div class="product-brand-cat">
+        <a href="{{ url_for('category', category_name=product.category) }}">{{ product.category }}</a>
+        <span class="breadcrumb-sep">·</span>
+        <a href="{{ url_for('products', brand=product.brand) }}">{{ product.brand }}</a>
+      </div>
+      <h1 class="product-title">{{ product.name }}</h1>
+
+      <!-- Rating -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <span style="background:#000;color:#fff;padding:3px 10px;border-radius:3px;font-size:0.8rem;font-weight:700;">
+          {{ product.rating }} ★
+        </span>
+        <span style="font-size:0.85rem;color:#888;">{{ product.reviews_count }} ratings</span>
+        <span style="font-size:0.85rem;color:#22a500;font-weight:600;">{% if product.stock > 0 %}In Stock ({{ product.stock }}){% else %}Out of Stock{% endif %}</span>
+      </div>
+
+      <!-- Price -->
+      <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:4px;margin-bottom:20px;">
+        <span class="big-price">₹{{ '{:,.0f}'.format(product.price) }}</span>
+        {% if product.original_price %}
+        <span class="big-orig">₹{{ '{:,.0f}'.format(product.original_price) }}</span>
+        <span class="big-saving">Save ₹{{ '{:,.0f}'.format(product.original_price - product.price) }} ({{ ((1 - product.price/product.original_price)*100)|int }}% off)</span>
+        {% endif %}
+      </div>
+
+      <p style="font-size:0.9rem;color:#444;line-height:1.7;">{{ product.description }}</p>
+
+      <!-- Quantity -->
+      <div style="margin-top:20px;">
+        <label style="font-size:0.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666;display:block;margin-bottom:8px;">Quantity</label>
+        <div class="qty-wrap">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <input type="number" class="qty-input" id="qty-{{ product.id }}" value="1" min="1" max="{{ product.stock }}">
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-btns">
+        <button class="btn-buy-now btn-add-cart" data-pid="{{ product.id }}" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+          <i class="bi bi-bag-plus"></i> Add to Cart
+        </button>
+        <button class="btn-add-wish wishlist-toggle {% if in_wishlist %}active{% endif %}" data-pid="{{ product.id }}">
+          <i class="bi bi-heart{% if in_wishlist %}-fill{% endif %}"></i>
+        </button>
+      </div>
+      <div style="margin-top:12px;">
+        <a href="{{ url_for('checkout') }}" class="btn-light-outline" style="width:100%;justify-content:center;">
+          <i class="bi bi-lightning-fill"></i> Buy Now
+        </a>
+      </div>
+
+      <!-- Delivery Info -->
+      <div class="delivery-info">
+        <div class="di"><i class="bi bi-truck"></i><div><strong>Free Delivery</strong><br><span style="color:#888;">On orders above ₹999. Standard delivery in 3-5 days.</span></div></div>
+        <div class="di"><i class="bi bi-arrow-return-left"></i><div><strong>7-Day Returns</strong><br><span style="color:#888;">Easy returns & refund. No questions asked.</span></div></div>
+        <div class="di"><i class="bi bi-shield-check"></i><div><strong>Authentic Product</strong><br><span style="color:#888;">100% genuine. Directly from {{ product.brand }}.</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-section">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="showTab('desc')">Description</button>
+      <button class="tab-btn" onclick="showTab('specs')">Specifications</button>
+      <button class="tab-btn" onclick="showTab('reviews')">Reviews ({{ product.reviews_count }})</button>
+    </div>
+    <div id="tab-desc" class="tab-content-panel active">
+      <p style="font-size:0.9rem;line-height:1.8;color:#444;max-width:700px;">{{ product.description }}</p>
+      <ul style="font-size:0.9rem;color:#444;line-height:2;">
+        <li>Brand: {{ product.brand }}</li>
+        <li>Category: {{ product.category }}</li>
+        <li>Stock available: {{ product.stock }} units</li>
+        <li>Customer Rating: {{ product.rating }}/5</li>
+      </ul>
+    </div>
+    <div id="tab-specs" class="tab-content-panel">
+      <table class="spec-table">
+        <tr><td>Brand</td><td>{{ product.brand }}</td></tr>
+        <tr><td>Category</td><td>{{ product.category }}</td></tr>
+        <tr><td>Price</td><td>₹{{ '{:,.0f}'.format(product.price) }}</td></tr>
+        <tr><td>Rating</td><td>{{ product.rating }}/5</td></tr>
+        <tr><td>Stock</td><td>{{ product.stock }} units</td></tr>
+        <tr><td>Total Reviews</td><td>{{ product.reviews_count }}</td></tr>
+      </table>
+    </div>
+    <div id="tab-reviews" class="tab-content-panel">
+      {% set star_pct = ((product.rating / 5) * 100)|int %}
+      <div style="display:flex;align-items:center;gap:32px;margin-bottom:24px;padding:24px;background:#f8f8f8;border-radius:4px;max-width:500px;">
+        <div style="text-align:center;">
+          <div style="font-size:3.5rem;font-weight:700;line-height:1;">{{ product.rating }}</div>
+          <div style="color:#111;font-size:1.1rem;">★★★★★</div>
+          <div style="font-size:0.78rem;color:#888;margin-top:4px;">{{ product.reviews_count }} ratings</div>
+        </div>
+        <div style="flex:1;">
+          {% for i in [5,4,3,2,1] %}
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:0.78rem;width:10px;text-align:right;">{{ i }}</span>
+            <span style="font-size:0.75rem;">★</span>
+            <div style="flex:1;height:6px;background:#e0e0e0;border-radius:3px;overflow:hidden;">
+              <div style="width:{{ [80,65,20,10,5][loop.index0] }}%;height:100%;background:#000;border-radius:3px;"></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <p style="color:#888;font-size:0.9rem;">{{ product.reviews_count }} customers reviewed this product.</p>
+    </div>
+  </div>
+
+  <!-- RELATED PRODUCTS -->
+  {% if related %}
+  <div class="section-header" style="margin-top:32px;">
+    <h2 class="section-title">RELATED <span>PRODUCTS</span></h2>
+    <a href="{{ url_for('category', category_name=product.category) }}" class="view-all-link">View All</a>
+  </div>
+  <div class="row row-cols-2 row-cols-sm-4 g-3">
+    {% for p in related %}
+    <div class="col">
+      <div class="product-card">
+        {% if p.original_price %}<span class="badge-discount">-{{ ((1 - p.price/p.original_price)*100)|int }}%</span>{% endif %}
+        <button class="wishlist-btn wishlist-toggle" data-pid="{{ p.id }}"><i class="bi bi-heart"></i></button>
+        <a href="{{ url_for('product_detail', product_id=p.id) }}" class="card-link">
+          <div class="img-wrap">
+            <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400'">
+          </div>
+          <div class="card-body">
+            <div class="brand-tag">{{ p.brand }}</div>
+            <div class="prod-name">{{ p.name }}</div>
+            <div class="price-row">
+              <span class="price">₹{{ '{:,.0f}'.format(p.price) }}</span>
+              {% if p.original_price %}<span class="orig-price">₹{{ '{:,.0f}'.format(p.original_price) }}</span>{% endif %}
+            </div>
+          </div>
+        </a>
+        <div style="padding:0 14px 14px;">
+          <button class="btn-add btn-add-cart" data-pid="{{ p.id }}"><i class="bi bi-bag-plus"></i> Add</button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeQty(delta) {
+  const input = document.getElementById('qty-{{ product.id }}');
+  const newVal = Math.max(1, Math.min({{ product.stock }}, parseInt(input.value) + delta));
+  input.value = newVal;
+}
+function showTab(name) {
+  document.querySelectorAll('.tab-content-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+{% endblock %}

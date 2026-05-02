@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% block title %}Cart — ShopBlack{% endblock %}
+{% block extra_css %}
+<style>
+.cart-item-row {
+  display: flex;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: flex-start;
+}
+.cart-item-row:last-child { border-bottom: none; }
+.cart-img {
+  width: 90px; height: 90px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.cart-img img { width: 100%; height: 100%; object-fit: cover; }
+.cart-item-info { flex: 1; }
+.cart-item-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+.cart-item-brand { font-size: 0.75rem; color: #888; margin-bottom: 10px; }
+.cart-item-price { font-size: 1rem; font-weight: 700; }
+.cart-item-orig { font-size: 0.8rem; color: #aaa; text-decoration: line-through; margin-left: 8px; }
+.qty-form { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.qty-form select { border: 1px solid #ddd; border-radius: 3px; padding: 6px 10px; font-size: 0.85rem; outline: none; }
+.qty-form button { background: none; border: none; color: #888; font-size: 0.82rem; cursor: pointer; padding: 6px 8px; text-decoration: underline; }
+.qty-form button:hover { color: #000; }
+.summary-card {
+  background: #f8f8f8;
+  border-radius: 4px;
+  padding: 24px;
+  position: sticky;
+  top: 80px;
+}
+.summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.9rem; border-bottom: 1px solid #efefef; }
+.summary-row:last-of-type { border-bottom: none; }
+.summary-total { font-size: 1.1rem; font-weight: 700; padding: 14px 0 0; margin-top: 8px; display: flex; justify-content: space-between; border-top: 2px solid #000; }
+.free-delivery-bar { background: #e8f5e9; border-radius: 3px; padding: 10px 14px; font-size: 0.82rem; color: #2e7d32; margin-bottom: 16px; font-weight: 500; }
+.empty-cart { text-align: center; padding: 80px 20px; }
+.empty-cart i { font-size: 3.5rem; color: #ddd; display: block; margin-bottom: 20px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-content">
+  <div class="section-header" style="padding-top:24px;">
+    <h2 class="section-title">MY <span>CART</span></h2>
+    <span style="font-size:0.85rem;color:#888;">{{ items|length }} item{{ 's' if items|length != 1 }}</span>
+  </div>
+
+  {% if items %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div style="background:#fff;border:1px solid #e8e8e8;border-radius:4px;padding:20px 24px;">
+        {% for item in items %}
+        <div class="cart-item-row">
+          <a href="{{ url_for('product_detail', product_id=item['product_id']) }}" class="cart-img">
+            <img src="{{ item['image_url'] }}" alt="{{ item['name'] }}" onerror="this.src='https://via.placeholder.com/90'">
+          </a>
+          <div class="cart-item-info">
+            <div class="cart-item-brand">{{ item['brand'] }} · {{ item['category'] }}</div>
+            <div class="cart-item-name">{{ item['name'] }}</div>
+            <div>
+              <span class="cart-item-price">₹{{ '{:,.0f}'.format(item['price']) }}</span>
+              {% if item['original_price'] %}
+              <span class="cart-item-orig">₹{{ '{:,.0f}'.format(item['original_price']) }}</span>
+              {% endif %}
+            </div>
+            <form class="qty-form" method="POST" action="{{ url_for('update_cart', item_id=item['id']) }}">
+              <select name="quantity" onchange="this.form.submit()">
+                {% for q in range(1, 11) %}
+                <option value="{{ q }}" {% if q == item['quantity'] %}selected{% endif %}>Qty: {{ q }}</option>
+                {% endfor %}
+              </select>
+              <a href="{{ url_for('remove_from_cart', item_id=item['id']) }}" style="color:#888;font-size:0.82rem;text-decoration:underline;">Remove</a>
+            </form>
+          </div>
+          <div style="text-align:right;white-space:nowrap;">
+            <strong style="font-size:1rem;">₹{{ '{:,.0f}'.format(item['price'] * item['quantity']) }}</strong>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="summary-card">
+        <h5 style="font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1.3rem;margin-bottom:16px;">ORDER SUMMARY</h5>
+        {% if subtotal > 999 %}
+        <div class="free-delivery-bar"><i class="bi bi-truck me-1"></i> You qualify for FREE delivery!</div>
+        {% else %}
+        <div style="background:#fff3cd;border-radius:3px;padding:10px 14px;font-size:0.82rem;color:#856404;margin-bottom:16px;">
+          Add ₹{{ '{:,.0f}'.format(999 - subtotal) }} more for FREE delivery
+        </div>
+        {% endif %}
+        <div class="summary-row"><span>Subtotal ({{ items|length }} items)</span><span>₹{{ '{:,.0f}'.format(subtotal) }}</span></div>
+        <div class="summary-row"><span>Delivery</span><span>{% if shipping == 0 %}<span style="color:#2e7d32;">FREE</span>{% else %}₹{{ shipping }}{% endif %}</span></div>
+        <div class="summary-row"><span>Discount</span><span style="color:#2e7d32;">–{% set total_savings = namespace(val=0) %}{% for item in items %}{% if item['original_price'] %}{% set total_savings.val = total_savings.val + (item['original_price'] - item['price']) * item['quantity'] %}{% endif %}{% endfor %}₹{{ '{:,.0f}'.format(total_savings.val) }}</span></div>
+        <div class="summary-total"><span>TOTAL</span><span>₹{{ '{:,.0f}'.format(total) }}</span></div>
+        <a href="{{ url_for('checkout') }}" class="btn-dark-fill" style="width:100%;justify-content:center;margin-top:20px;font-size:0.9rem;padding:13px;">
+          <i class="bi bi-lock"></i> Secure Checkout
+        </a>
+        <a href="{{ url_for('products') }}" class="btn-light-outline" style="width:100%;justify-content:center;margin-top:10px;font-size:0.875rem;padding:11px;">
+          Continue Shopping
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="empty-cart">
+    <i class="bi bi-bag"></i>
+    <h4>Your cart is empty</h4>
+    <p style="color:#888;">Looks like you haven't added anything yet.</p>
+    <a href="{{ url_for('products') }}" class="btn-dark-fill" style="margin-top:16px;">Start Shopping</a>
+  </div>
+  {% endif %}
+
+  <!-- CART RECOMMENDATIONS (Apriori) -->
+  {% if cart_recommendations %}
+  <div class="section-header" style="margin-top:40px;">
+    <h2 class="section-title">YOU MIGHT ALSO <span>NEED</span></h2>
+    <span style="font-size:0.78rem;color:#888;background:#f5f5f5;padding:4px 10px;border-radius:3px;">
+      <i class="bi bi-graph-up me-1"></i>Based on your cart
+    </span>
+  </div>
+  <div class="row row-cols-2 row-cols-sm-4 g-3">
+    {% for rec in cart_recommendations %}
+    <div class="col">
+      <div class="product-card">
+        {% if rec['original_price'] %}
+        <span class="badge-discount">-{{ ((1 - rec['price']/rec['original_price'])*100)|int }}%</span>
+        {% endif %}
+        <div style="position:absolute;top:10px;right:10px;background:#000;color:#fff;font-size:0.62rem;padding:3px 8px;border-radius:3px;letter-spacing:0.5px;">
+          {{ (rec['confidence']*100)|int }}% match
+        </div>
+        <a href="{{ url_for('product_detail', product_id=rec['id']) }}" class="card-link">
+          <div class="img-wrap">
+            <img src="{{ rec['image_url'] }}" alt="{{ rec['name'] }}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400'">
+          </div>
+          <div class="card-body">
+            <div class="brand-tag">{{ rec['brand'] }}</div>
+            <div class="prod-name">{{ rec['name'] }}</div>
+            <div class="price-row">
+              <span class="price">₹{{ '{:,.0f}'.format(rec['price']) }}</span>
+              {% if rec['original_price'] %}<span class="orig-price">₹{{ '{:,.0f}'.format(rec['original_price']) }}</span>{% endif %}
+            </div>
+          </div>
+        </a>
+        <div style="padding:0 14px 14px;">
+          <button class="btn-add btn-add-cart" data-pid="{{ rec['id'] }}">
+            <i class="bi bi-bag-plus"></i> Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Order Placed! — ShopBlack{% endblock %}
+{% block content %}
+<div class="page-content" style="text-align:center;padding-top:80px;padding-bottom:80px;">
+  <div style="max-width:500px;margin:0 auto;">
+    <div style="width:80px;height:80px;background:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+      <i class="bi bi-check-lg" style="font-size:2rem;color:#fff;"></i>
+    </div>
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:3px;margin-bottom:8px;">ORDER PLACED!</h1>
+    <p style="color:#666;margin-bottom:32px;">Thank you for shopping with ShopBlack. Your order has been confirmed.</p>
+
+    <div style="background:#f8f8f8;border-radius:4px;padding:24px;text-align:left;margin-bottom:32px;">
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #efefef;font-size:0.875rem;">
+        <span style="color:#888;">Order ID</span>
+        <strong>#SB{{ '%06d'|format(order['id']) }}</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #efefef;font-size:0.875rem;">
+        <span style="color:#888;">Amount Paid</span>
+        <strong>₹{{ '{:,.0f}'.format(order['total_amount']) }}</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #efefef;font-size:0.875rem;">
+        <span style="color:#888;">Payment Method</span>
+        <strong>{{ order['payment_method'] }}</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:0.875rem;">
+        <span style="color:#888;">Estimated Delivery</span>
+        <strong style="color:#2e7d32;">3–5 Business Days</strong>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="{{ url_for('orders') }}" class="btn-dark-fill">View My Orders</a>
+      <a href="{{ url_for('products') }}" class="btn-light-outline">Continue Shopping</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

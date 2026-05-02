@@ -1,0 +1,458 @@
+{% extends 'base.html' %}
+{% block title %}Bazarr — Premium Shopping{% endblock %}
+{% block extra_css %}
+<style>
+/* HERO */
+.hero {
+  background: #000;
+  color: #fff;
+  padding: 80px 0 60px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+.hero::before {
+  content: 'SHOP';
+  position: absolute;
+  right: -40px; top: -20px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14rem;
+  color: rgba(255,255,255,0.03);
+  pointer-events: none;
+  line-height: 1;
+}
+.hero-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+.hero-text { flex: 1; }
+.hero-eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 7vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+.hero-title em { font-style: normal; color: #888; }
+.hero-sub {
+  font-size: 1rem;
+  color: #aaa;
+  max-width: 420px;
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+.hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn-hero-primary {
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 14px 36px;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-hero-primary:hover { background: #ddd; color: #000; }
+.btn-hero-secondary {
+  background: transparent;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 14px 36px;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-hero-secondary:hover { border-color: #888; color: #fff; }
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid #222;
+}
+.stat-item .num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  color: #fff;
+  display: block;
+  line-height: 1;
+}
+.stat-item .lbl {
+  font-size: 0.75rem;
+  color: #666;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.hero-visual {
+  flex: 0 0 380px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.hero-visual .vi {
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.hero-visual .vi img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  filter: grayscale(30%);
+  transition: filter 0.3s;
+}
+.hero-visual .vi:hover img { filter: grayscale(0%); }
+.hero-visual .vi:first-child {
+  grid-column: span 2;
+}
+.hero-visual .vi:first-child img { height: 220px; }
+/* CATEGORY GRID */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.cat-item {
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 24px 16px;
+  text-align: center;
+  text-decoration: none;
+  color: #111;
+  transition: all 0.25s;
+  border: 1px solid transparent;
+}
+.cat-item:hover {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+  transform: translateY(-4px);
+}
+.cat-item i {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 10px;
+}
+.cat-item span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+/* OFFERS BANNER */
+.offers-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 16px;
+  margin: 8px 0;
+}
+.offer-card {
+  border-radius: 6px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  text-decoration: none;
+}
+.offer-card.big { background: #000; }
+.offer-card.med { background: #111; }
+.offer-card.sm { background: #0d0d0d; }
+.offer-card .offer-tag {
+  position: absolute;
+  top: 16px; left: 16px;
+  background: #fff;
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.offer-card .offer-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  color: #fff;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.offer-card .offer-sub {
+  color: #888;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+.offer-card .offer-link {
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #444;
+  width: fit-content;
+  margin-top: 10px;
+  transition: border-color 0.2s;
+}
+.offer-card:hover .offer-link { border-color: #fff; }
+@media (max-width: 992px) {
+  .hero-visual { display: none; }
+  .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  .offers-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 576px) {
+  .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-stats { gap: 20px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <p class="hero-eyebrow">New Season. New Standards.</p>
+      <h1 class="hero-title">SHOP<br>LIKE <em>NEVER</em><br>BEFORE</h1>
+      <p class="hero-sub">Discover premium products across Electronics, Fashion, Home & more. Free delivery on orders above ₹999.</p>
+      <div class="hero-actions">
+        <a href="{{ url_for('products') }}" class="btn-hero-primary">Shop Now</a>
+        <a href="{{ url_for('products', sort='newest') }}" class="btn-hero-secondary">New Arrivals</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item"><span class="num">50K+</span><span class="lbl">Products</span></div>
+        <div class="stat-item"><span class="num">2M+</span><span class="lbl">Customers</span></div>
+        <div class="stat-item"><span class="num">500+</span><span class="lbl">Brands</span></div>
+        <div class="stat-item"><span class="num">4.9★</span><span class="lbl">Rating</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="vi">
+        <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800" alt="Hero">
+      </div>
+      <div class="vi">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" alt="Shoes">
+      </div>
+      <div class="vi">
+        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" alt="Headphones">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE CONTENT -->
+<div class="page-content">
+
+  <!-- CATEGORIES -->
+  <div class="section-header">
+    <h2 class="section-title">SHOP BY <span>CATEGORY</span></h2>
+  </div>
+  <div class="cat-grid">
+    <a href="{{ url_for('category', category_name='Electronics') }}" class="cat-item">
+      <i class="bi bi-cpu"></i><span>Electronics</span>
+    </a>
+    <a href="{{ url_for('category', category_name='Fashion') }}" class="cat-item">
+      <i class="bi bi-bag"></i><span>Fashion</span>
+    </a>
+    <a href="{{ url_for('category', category_name='Home & Kitchen') }}" class="cat-item">
+      <i class="bi bi-house"></i><span>Home & Kitchen</span>
+    </a>
+    <a href="{{ url_for('category', category_name='Books') }}" class="cat-item">
+      <i class="bi bi-book"></i><span>Books</span>
+    </a>
+    <a href="{{ url_for('category', category_name='Sports') }}" class="cat-item">
+      <i class="bi bi-trophy"></i><span>Sports</span>
+    </a>
+  </div>
+
+  <!-- OFFERS BANNER -->
+  <div class="section-header"><h2 class="section-title">HOT <span>OFFERS</span></h2></div>
+  <div class="offers-row">
+    <a href="{{ url_for('category', category_name='Electronics') }}" class="offer-card big">
+      <span class="offer-tag">Flash Sale</span>
+      <div class="offer-title">UP TO 40%<br>OFF ELECTRONICS</div>
+      <div class="offer-sub">Limited time offer on top brands</div>
+      <span class="offer-link">Shop Now →</span>
+    </a>
+    <a href="{{ url_for('category', category_name='Fashion') }}" class="offer-card med">
+      <span class="offer-tag">New In</span>
+      <div class="offer-title">FRESH FASHION</div>
+      <div class="offer-sub">Latest season arrivals</div>
+      <span class="offer-link">Explore →</span>
+    </a>
+    <a href="{{ url_for('products') }}" class="offer-card sm">
+      <span class="offer-tag">Free Ship</span>
+      <div class="offer-title">OVER ₹999</div>
+      <div class="offer-sub">Free delivery, every time</div>
+      <span class="offer-link">Learn More →</span>
+    </a>
+  </div>
+
+  <!-- FEATURED PRODUCTS -->
+  {% if featured %}
+  <div class="section-header">
+    <h2 class="section-title">FEATURED <span>PICKS</span></h2>
+    <a href="{{ url_for('products') }}" class="view-all-link">View All</a>
+  </div>
+  <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3 mb-2">
+    {% for p in featured %}
+    <div class="col">
+      <div class="product-card">
+        {% if p.original_price %}
+        <span class="badge-discount">-{{ ((1 - p.price/p.original_price)*100)|int }}%</span>
+        {% endif %}
+        <button class="wishlist-btn wishlist-toggle" data-pid="{{ p.id }}">
+          <i class="bi bi-heart"></i>
+        </button>
+        <a href="{{ url_for('product_detail', product_id=p.id) }}" class="card-link">
+          <div class="img-wrap">
+            <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
+          </div>
+          <div class="card-body">
+            <div class="brand-tag">{{ p.brand }}</div>
+            <div class="prod-name">{{ p.name }}</div>
+            <div class="rating-row">
+              <span class="stars">{% for i in range(p.rating|int) %}★{% endfor %}{% if p.rating % 1 >= 0.5 %}½{% endif %}</span>
+              <span class="rev-count">({{ p.reviews_count }})</span>
+            </div>
+            <div class="price-row">
+              <span class="price">₹{{ '{:,.0f}'.format(p.price) }}</span>
+              {% if p.original_price %}<span class="orig-price">₹{{ '{:,.0f}'.format(p.original_price) }}</span>{% endif %}
+            </div>
+          </div>
+        </a>
+        <div style="padding:0 14px 14px;">
+          <button class="btn-add btn-add-cart" data-pid="{{ p.id }}">
+            <i class="bi bi-bag-plus"></i> Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- BEST SELLERS -->
+  <div class="section-header">
+    <h2 class="section-title">BEST <span>SELLERS</span></h2>
+    <a href="{{ url_for('products', sort='rating') }}" class="view-all-link">View All</a>
+  </div>
+  <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3 mb-2">
+    {% for p in best_sellers %}
+    <div class="col">
+      <div class="product-card">
+        {% if p.original_price %}
+        <span class="badge-discount">-{{ ((1 - p.price/p.original_price)*100)|int }}%</span>
+        {% endif %}
+        <button class="wishlist-btn wishlist-toggle" data-pid="{{ p.id }}">
+          <i class="bi bi-heart"></i>
+        </button>
+        <a href="{{ url_for('product_detail', product_id=p.id) }}" class="card-link">
+          <div class="img-wrap">
+            <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
+          </div>
+          <div class="card-body">
+            <div class="brand-tag">{{ p.brand }}</div>
+            <div class="prod-name">{{ p.name }}</div>
+            <div class="rating-row">
+              <span class="stars">{% for i in range(p.rating|int) %}★{% endfor %}</span>
+              <span class="rev-count">({{ p.reviews_count }})</span>
+            </div>
+            <div class="price-row">
+              <span class="price">₹{{ '{:,.0f}'.format(p.price) }}</span>
+              {% if p.original_price %}<span class="orig-price">₹{{ '{:,.0f}'.format(p.original_price) }}</span>{% endif %}
+            </div>
+          </div>
+        </a>
+        <div style="padding:0 14px 14px;">
+          <button class="btn-add btn-add-cart" data-pid="{{ p.id }}">
+            <i class="bi bi-bag-plus"></i> Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- NEW ARRIVALS -->
+  <div class="section-header">
+    <h2 class="section-title">NEW <span>ARRIVALS</span></h2>
+    <a href="{{ url_for('products', sort='newest') }}" class="view-all-link">View All</a>
+  </div>
+  <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3">
+    {% for p in new_arrivals %}
+    <div class="col">
+      <div class="product-card">
+        <span class="badge-discount" style="background:#fff;color:#000;border:1px solid #000;">NEW</span>
+        <button class="wishlist-btn wishlist-toggle" data-pid="{{ p.id }}">
+          <i class="bi bi-heart"></i>
+        </button>
+        <a href="{{ url_for('product_detail', product_id=p.id) }}" class="card-link">
+          <div class="img-wrap">
+            <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
+          </div>
+          <div class="card-body">
+            <div class="brand-tag">{{ p.brand }}</div>
+            <div class="prod-name">{{ p.name }}</div>
+            <div class="price-row">
+              <span class="price">₹{{ '{:,.0f}'.format(p.price) }}</span>
+              {% if p.original_price %}<span class="orig-price">₹{{ '{:,.0f}'.format(p.original_price) }}</span>{% endif %}
+            </div>
+          </div>
+        </a>
+        <div style="padding:0 14px 14px;">
+          <button class="btn-add btn-add-cart" data-pid="{{ p.id }}">
+            <i class="bi bi-bag-plus"></i> Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- TRUST BADGES -->
+  <div style="background:#f5f5f5;border-radius:6px;padding:32px;margin-top:48px;">
+    <div class="row g-3 text-center">
+      <div class="col-6 col-md-3">
+        <i class="bi bi-truck" style="font-size:2rem;color:#000;display:block;margin-bottom:8px;"></i>
+        <strong style="font-size:0.875rem;">Free Delivery</strong>
+        <p style="font-size:0.75rem;color:#888;margin:4px 0 0;">On orders above ₹999</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <i class="bi bi-shield-check" style="font-size:2rem;color:#000;display:block;margin-bottom:8px;"></i>
+        <strong style="font-size:0.875rem;">Secure Payment</strong>
+        <p style="font-size:0.75rem;color:#888;margin:4px 0 0;">100% protected transactions</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <i class="bi bi-arrow-return-left" style="font-size:2rem;color:#000;display:block;margin-bottom:8px;"></i>
+        <strong style="font-size:0.875rem;">Easy Returns</strong>
+        <p style="font-size:0.75rem;color:#888;margin:4px 0 0;">7-day hassle-free returns</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <i class="bi bi-headset" style="font-size:2rem;color:#000;display:block;margin-bottom:8px;"></i>
+        <strong style="font-size:0.875rem;">24/7 Support</strong>
+        <p style="font-size:0.75rem;color:#888;margin:4px 0 0;">Round the clock assistance</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

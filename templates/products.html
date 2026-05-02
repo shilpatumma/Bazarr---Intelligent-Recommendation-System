@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% block title %}Products — ShopBlack{% endblock %}
+{% block extra_css %}
+<style>
+.filter-sidebar {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  padding: 24px;
+  position: sticky;
+  top: 80px;
+}
+.filter-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #f0f0f0; }
+.filter-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.filter-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #444;
+  margin-bottom: 14px;
+}
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.filter-option input[type=checkbox] {
+  width: 16px; height: 16px;
+  accent-color: #000;
+  cursor: pointer;
+}
+.filter-option label {
+  font-size: 0.85rem;
+  color: #444;
+  cursor: pointer;
+}
+.price-inputs { display: flex; gap: 8px; }
+.price-inputs input {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 7px 10px;
+  font-size: 0.82rem;
+  outline: none;
+}
+.price-inputs input:focus { border-color: #000; }
+.sort-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+}
+.sort-bar select {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+}
+.sort-bar select:focus { border-color: #000; }
+.results-info { font-size: 0.85rem; color: #888; }
+.active-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.filter-tag {
+  background: #f0f0f0;
+  border-radius: 3px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+.filter-tag a { color: #888; text-decoration: none; font-size: 0.9rem; }
+.filter-tag a:hover { color: #000; }
+.pagination-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  gap: 6px;
+}
+.page-btn {
+  width: 36px; height: 36px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: #333;
+  transition: all 0.2s;
+}
+.page-btn.active, .page-btn:hover { background: #000; color: #fff; border-color: #000; }
+.no-results {
+  text-align: center;
+  padding: 80px 20px;
+  color: #888;
+}
+.no-results i { font-size: 3rem; display: block; margin-bottom: 16px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-content">
+  <div class="section-header" style="padding-top:24px;">
+    <h2 class="section-title">
+      {% if current_category %}{{ current_category | upper }}{% elif search %}SEARCH: {{ search | upper }}{% else %}ALL <span>PRODUCTS</span>{% endif %}
+    </h2>
+    <span class="results-info">{{ pagination.total }} products found</span>
+  </div>
+
+  <!-- Active Filters -->
+  {% if current_category or current_brand or search %}
+  <div class="active-filters">
+    {% if current_category %}<span class="filter-tag">{{ current_category }} <a href="{{ url_for('products', brand=current_brand, search=search) }}">×</a></span>{% endif %}
+    {% if current_brand %}<span class="filter-tag">{{ current_brand }} <a href="{{ url_for('products', category=current_category, search=search) }}">×</a></span>{% endif %}
+    {% if search %}<span class="filter-tag">Search: {{ search }} <a href="{{ url_for('products', category=current_category, brand=current_brand) }}">×</a></span>{% endif %}
+    <a href="{{ url_for('products') }}" style="color:#888;font-size:0.78rem;text-decoration:none;align-self:center;">Clear All</a>
+  </div>
+  {% endif %}
+
+  <div class="row g-4">
+    <!-- SIDEBAR -->
+    <div class="col-lg-3 col-md-4">
+      <div class="filter-sidebar">
+        <form method="get" id="filterForm">
+          <input type="hidden" name="search" value="{{ search }}">
+          <input type="hidden" name="sort" value="{{ sort }}">
+
+          <div class="filter-section">
+            <div class="filter-title">Categories</div>
+            {% for cat in categories %}
+            <div class="filter-option">
+              <input type="radio" name="category" id="cat_{{ loop.index }}" value="{{ cat }}" {% if current_category == cat %}checked{% endif %} onchange="document.getElementById('filterForm').submit()">
+              <label for="cat_{{ loop.index }}">{{ cat }}</label>
+            </div>
+            {% endfor %}
+            {% if current_category %}
+            <div style="margin-top:8px;">
+              <a href="{{ url_for('products', sort=sort, search=search) }}" style="font-size:0.78rem;color:#888;">✕ Clear</a>
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="filter-section">
+            <div class="filter-title" style="display:flex;justify-content:space-between;align-items:center;">
+              <span>Brands</span>
+              {% if current_category %}
+              <span style="font-size:0.7rem;color:#aaa;font-weight:400;letter-spacing:0;text-transform:none;">{{ current_category }} only</span>
+              {% endif %}
+            </div>
+            {% if brands %}
+              {% for br in brands %}
+              <div class="filter-option">
+                <input type="radio" name="brand" id="br_{{ loop.index }}" value="{{ br }}" {% if current_brand == br %}checked{% endif %} onchange="document.getElementById('filterForm').submit()">
+                <label for="br_{{ loop.index }}">{{ br }}</label>
+              </div>
+              {% endfor %}
+              {% if current_brand %}
+              <div style="margin-top:8px;">
+                <a href="{{ url_for('products', category=current_category, sort=sort, search=search) }}" style="font-size:0.78rem;color:#888;">✕ Clear brand</a>
+              </div>
+              {% endif %}
+            {% else %}
+              <p style="font-size:0.8rem;color:#aaa;margin:0;">No brands found</p>
+            {% endif %}
+          </div>
+
+          <div class="filter-section">
+            <div class="filter-title">Price Range</div>
+            <div class="price-inputs mb-3">
+              <input type="number" name="min_price" placeholder="Min ₹" value="{{ request.args.get('min_price','') }}">
+              <input type="number" name="max_price" placeholder="Max ₹" value="{{ request.args.get('max_price','') }}">
+            </div>
+            <button type="submit" class="btn-dark-fill" style="width:100%;justify-content:center;padding:8px;">Apply</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- PRODUCTS GRID -->
+    <div class="col-lg-9 col-md-8">
+      <!-- Sort Bar -->
+      <div class="sort-bar">
+        <span class="results-info">Showing {{ pagination.items|length }} of {{ pagination.total }}</span>
+        <select onchange="window.location.href=this.value" style="background:#fff;">
+          <option value="{{ url_for('products', category=current_category, brand=current_brand, search=search, sort='default') }}" {% if sort=='default' %}selected{% endif %}>Sort: Relevance</option>
+          <option value="{{ url_for('products', category=current_category, brand=current_brand, search=search, sort='price_asc') }}" {% if sort=='price_asc' %}selected{% endif %}>Price: Low to High</option>
+          <option value="{{ url_for('products', category=current_category, brand=current_brand, search=search, sort='price_desc') }}" {% if sort=='price_desc' %}selected{% endif %}>Price: High to Low</option>
+          <option value="{{ url_for('products', category=current_category, brand=current_brand, search=search, sort='rating') }}" {% if sort=='rating' %}selected{% endif %}>Top Rated</option>
+          <option value="{{ url_for('products', category=current_category, brand=current_brand, search=search, sort='newest') }}" {% if sort=='newest' %}selected{% endif %}>Newest First</option>
+        </select>
+      </div>
+
+      {% if products %}
+      <div class="row row-cols-2 row-cols-sm-2 row-cols-lg-3 g-3">
+        {% for p in products %}
+        <div class="col">
+          <div class="product-card">
+            {% if p.original_price %}
+            <span class="badge-discount">-{{ ((1 - p.price/p.original_price)*100)|int }}%</span>
+            {% endif %}
+            <button class="wishlist-btn wishlist-toggle" data-pid="{{ p.id }}">
+              <i class="bi bi-heart"></i>
+            </button>
+            <a href="{{ url_for('product_detail', product_id=p.id) }}" class="card-link">
+              <div class="img-wrap">
+                <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
+              </div>
+              <div class="card-body">
+                <div class="brand-tag">{{ p.brand }}</div>
+                <div class="prod-name">{{ p.name }}</div>
+                <div class="rating-row">
+                  <span class="stars">{% for i in range(p.rating|int) %}★{% endfor %}</span>
+                  <span class="rev-count">({{ p.reviews_count }})</span>
+                </div>
+                <div class="price-row">
+                  <span class="price">₹{{ '{:,.0f}'.format(p.price) }}</span>
+                  {% if p.original_price %}<span class="orig-price">₹{{ '{:,.0f}'.format(p.original_price) }}</span>{% endif %}
+                </div>
+              </div>
+            </a>
+            <div style="padding:0 14px 14px;">
+              <button class="btn-add btn-add-cart" data-pid="{{ p.id }}">
+                <i class="bi bi-bag-plus"></i> Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- PAGINATION -->
+      {% if pagination.pages > 1 %}
+      <div class="pagination-wrap">
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('products', page=pagination.prev_num, category=current_category, brand=current_brand, search=search, sort=sort) }}" class="page-btn"><i class="bi bi-chevron-left"></i></a>
+        {% endif %}
+        {% for p in pagination.iter_pages(left_edge=2, right_edge=2, left_current=2, right_current=2) %}
+          {% if p %}
+          <a href="{{ url_for('products', page=p, category=current_category, brand=current_brand, search=search, sort=sort) }}" class="page-btn {% if p == pagination.page %}active{% endif %}">{{ p }}</a>
+          {% else %}
+          <span class="page-btn" style="pointer-events:none;color:#ccc;">…</span>
+          {% endif %}
+        {% endfor %}
+        {% if pagination.has_next %}
+        <a href="{{ url_for('products', page=pagination.next_num, category=current_category, brand=current_brand, search=search, sort=sort) }}" class="page-btn"><i class="bi bi-chevron-right"></i></a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% else %}
+      <div class="no-results">
+        <i class="bi bi-search"></i>
+        <h5>No products found</h5>
+        <p>Try adjusting your filters or search terms.</p>
+        <a href="{{ url_for('products') }}" class="btn-dark-fill">Browse All Products</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

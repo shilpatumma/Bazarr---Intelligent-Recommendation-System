@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Wishlist — ShopBlack{% endblock %}
+{% block content %}
+<div class="page-content">
+  <div class="section-header" style="padding-top:24px;">
+    <h2 class="section-title">MY <span>WISHLIST</span></h2>
+    <span style="font-size:0.85rem;color:#888;">{{ items|length }} item{{ 's' if items|length != 1 }}</span>
+  </div>
+  {% if items %}
+  <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3">
+    {% for w in items %}
+    <div class="col">
+      <div class="product-card">
+        {% if w['original_price'] %}<span class="badge-discount">-{{ ((1 - w['price']/w['original_price'])*100)|int }}%</span>{% endif %}
+        <button class="wishlist-btn wishlist-toggle active" data-pid="{{ w['product_id'] }}"><i class="bi bi-heart-fill"></i></button>
+        <a href="{{ url_for('product_detail', product_id=w['product_id']) }}" class="card-link">
+          <div class="img-wrap"><img src="{{ w['image_url'] }}" alt="{{ w['name'] }}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400'"></div>
+          <div class="card-body">
+            <div class="brand-tag">{{ w['brand'] }}</div>
+            <div class="prod-name">{{ w['name'] }}</div>
+            <div class="price-row">
+              <span class="price">₹{{ '{:,.0f}'.format(w['price']) }}</span>
+              {% if w['original_price'] %}<span class="orig-price">₹{{ '{:,.0f}'.format(w['original_price']) }}</span>{% endif %}
+            </div>
+          </div>
+        </a>
+        <div style="padding:0 14px 14px;">
+          <button class="btn-add btn-add-cart" data-pid="{{ w['product_id'] }}"><i class="bi bi-bag-plus"></i> Add to Cart</button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:80px 20px;">
+    <i class="bi bi-heart" style="font-size:3rem;color:#ddd;display:block;margin-bottom:20px;"></i>
+    <h5>Your wishlist is empty</h5>
+    <p style="color:#888;">Save items you love to buy later.</p>
+    <a href="{{ url_for('products') }}" class="btn-dark-fill" style="margin-top:16px;">Browse Products</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
