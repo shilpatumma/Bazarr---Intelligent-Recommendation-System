@@ -100,7 +100,7 @@ http://127.0.0.1:5000/
 
 ## 📸 Screenshots
 
-👉 bazarr_img.png
+👉 ![Output](bazarr_img.png)
 
 ---
 
